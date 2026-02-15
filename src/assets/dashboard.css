@@ -1,0 +1,201 @@
+/* 1. 세련된 미니멀 스크롤바 디자인 (전체 공통) */
+.custom-scrollbar-minimal::-webkit-scrollbar {
+    height: 4px;
+    width: 4px;
+    transition: all 0.3s;
+}
+
+.custom-scrollbar-minimal::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar-minimal::-webkit-scrollbar-thumb {
+    background: rgba(203, 213, 225, 0);
+    border-radius: 100px;
+}
+
+/* 마우스를 올렸을 때만 스크롤바 노출 */
+.group:hover .custom-scrollbar-minimal::-webkit-scrollbar-thumb,
+.overflow-y-auto:hover::-webkit-scrollbar-thumb {
+    background: rgba(203, 213, 225, 1);
+}
+
+/* 2. 가로 탭 전용 스타일 */
+.horizontal-tabs {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    scrollbar-width: thin; /* Firefox */
+}
+
+/* 3. 좌우 페이드 마스크 효과 */
+.mask-fade-right {
+    mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+}
+
+/* 4. AI 채팅창 애니메이션 */
+.chat-slide-enter-active, .chat-slide-leave-active {
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.chat-slide-enter-from, .chat-slide-leave-to {
+    opacity: 0;
+    transform: translateY(40px) scale(0.9);
+}
+
+/* 5. 기타 유틸리티 */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* AI 버튼 글로우 효과 */
+.btn-ai-glow {
+    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4),
+    0 8px 10px -6px rgba(37, 99, 235, 0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-ai-glow:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 20px 35px -8px rgba(37, 99, 235, 0.5);
+    filter: brightness(1.1);
+}
+
+/* 맥동(Pulse) 효과: AI가 대기 중임을 암시 */
+@keyframes ai-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(37, 99, 235, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+}
+
+.animate-ai-pulse {
+    animation: ai-pulse 2s infinite;
+}
+
+/* 닫기 버튼용 스타일 */
+.btn-close-style {
+    background: white;
+    color: #1e293b;
+    border: 1px solid #e2e8f0;
+}
+
+/* 채팅창이 버튼 위로 충분히 뜨도록 조정 */
+.chat-window-pos {
+    bottom: 100px; /* 버튼 높이(64px) + 여유 공간 */
+    right: 0;
+}
+
+/* AI 버튼 디자인 고도화 (직관적인 아이콘 강조) */
+.btn-ai-main {
+    background: #0f172a; /* 더 깊이감 있는 네이비 */
+    box-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.3);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.btn-ai-main:hover {
+    transform: translateY(-5px) scale(1.05);
+    background: #1e293b;
+}
+
+/* 닫기 상태일 때의 화이트 버튼 */
+.btn-ai-close {
+    background: white;
+    border: 1px solid #e2e8f0;
+    color: #0f172a;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* 모바일에서 텍스트 줄바꿈 방지 */
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* 애니메이션 및 스크롤바는 dashboard.css에서 관리 권장 */
+.chat-slide-enter-active, .chat-slide-leave-active { transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+.chat-slide-enter-from, .chat-slide-leave-to { opacity: 0; transform: translateY(40px) scale(0.95); }
+
+/* 모바일 가로 스크롤 숨김 */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* 세련된 가로 스크롤바 디자인 */
+.horizontal-tabs::-webkit-scrollbar {
+    height: 5px; /* 스크롤바 두께 */
+}
+
+.horizontal-tabs::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+
+.horizontal-tabs::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.horizontal-tabs::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* 터치 및 가로 스크롤 최적화 */
+.horizontal-tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 12px; /* 스크롤바 공간 확보 */
+    -webkit-overflow-scrolling: touch;
+}
+
+/* 모바일 사이드바 트랜지션 */
+.sidebar-transition-enter-active, .sidebar-transition-leave-active {
+    transition: transform 0.3s ease;
+}
+.sidebar-transition-enter-from, .sidebar-transition-leave-to {
+    transform: translateX(-100%);
+}
+
+/* AI 버튼 글로우 효과 유지 */
+.btn-ai-glow {
+    background: #0f172a;
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.3);
+}
+
+/* 드롭다운 컨테이너의 Hover 유지 로직 */
+.dropdown-container {
+    position: relative;
+}
+
+/* 버튼과 메뉴 사이의 보이지 않는 연결 다리 생성 */
+.dropdown-menu::before {
+    content: "";
+    position: absolute;
+    top: -20px; /* 드롭다운 메뉴 상단으로 20px만큼 영역 확장 */
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: transparent;
+}
+
+/* 애니메이션 및 표시 제어 */
+.dropdown-menu {
+    display: none;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+}
+
+.dropdown-container:hover .dropdown-menu {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.slide-down-enter-active, .slide-down-leave-active {
+    transition: all 0.3s ease-out;
+}
+.slide-down-enter-from, .slide-down-leave-to {
+    transform: translateY(-100%);
+    opacity: 0;
+}
