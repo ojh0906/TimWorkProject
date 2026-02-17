@@ -5,7 +5,7 @@ import { useDrawing } from './composables/useDrawing.ts'
 import { useChat } from './composables/useChat.ts'
 import './assets/dashboard.css'
 
-// 로직 가져오기 (기존 코드 100% 유지)
+// 로직 가져오기 (기존 코드 유지)
 const {
   metadata, searchQuery, selectedDiscipline, filteredDrawings,
   sortedDrawingIds, selectedDrawing, currentImage, selectedDrawingId,
@@ -185,7 +185,7 @@ const onSliderInput = (e) => { updateScale(parseFloat(e.target.value)) }
           <div v-if="isCompareMode" @mousedown.stop @touchstart.stop class="absolute top-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-4 px-6 py-3 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-2xl shadow-2xl border border-blue-500/30">
             <div class="flex items-center gap-2 mr-2">
               <button @click="isSplitMode = false" :class="['p-2 rounded-lg transition-all', !isSplitMode ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700']" title="오버레이 모드"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg></button>
-              <button @click="isSplitMode = true" :class="['p-2 rounded-lg transition-all', isSplitMode ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700']" title="스플릿 모드"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg></button>
+              <button @click="isSplitMode = true" :class="['p-2 rounded-lg transition-all', isSplitMode ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700']" title="스플릿 모드"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M8 7l-4 4m0 0l4 4m-4-4h16m-4-4l4 4m0 0l-4 4"></path></svg></button>
             </div>
             <div class="h-8 w-px bg-slate-200 dark:bg-slate-700"></div>
             <div class="flex flex-col min-w-[80px]">
@@ -221,18 +221,16 @@ const onSliderInput = (e) => { updateScale(parseFloat(e.target.value)) }
                  :viewBox="`0 0 ${naturalSize.width} ${naturalSize.height}`"
                  preserveAspectRatio="xMidYMid meet"
                  style="z-index: 10;">
-
-              <defs>
-                <pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="40" height="40" patternTransform="rotate(45)">
-                  <line x1="0" y1="0" x2="0" y2="40" style="stroke:rgba(59, 130, 246, 0.4); stroke-width:10" />
-                </pattern>
-              </defs>
-
               <g v-for="(drawing, id) in metadata.drawings" :key="id">
+
                 <polygon v-if="drawing.position && drawing.position.vertices"
                          :points="formatVertices(drawing.position.vertices)"
-                         class="pointer-events-auto cursor-pointer transition-all duration-500 clickable-region"
-                         :class="[hoveredDrawingId === id ? 'region-active' : 'region-ready']"
+                         class="pointer-events-auto cursor-pointer transition-all duration-300 interactive-polygon"
+                         :class="[
+                            hoveredDrawingId === id
+                            ? 'polygon-active'
+                            : 'polygon-guide'
+                         ]"
                          @mouseenter="hoveredDrawingId = id"
                          @mouseleave="hoveredDrawingId = null"
                          @click="handleSelectDrawing(id)" />
@@ -241,7 +239,7 @@ const onSliderInput = (e) => { updateScale(parseFloat(e.target.value)) }
                   <polygon v-for="(region, rKey) in drawing.regions" :key="rKey"
                            v-if="region && region.polygon && region.polygon.vertices"
                            :points="formatVertices(region.polygon.vertices)"
-                           class="pointer-events-auto cursor-pointer region-ready hover:region-active"
+                           class="pointer-events-auto cursor-pointer polygon-guide hover:polygon-active"
                            @click="handleSelectDrawing(id)" />
                 </template>
               </g>
@@ -260,7 +258,13 @@ const onSliderInput = (e) => { updateScale(parseFloat(e.target.value)) }
 
         <div class="absolute top-6 right-6 z-20 flex flex-col gap-3 shrink-0">
           <button @click="toggleDarkMode" class="p-3 rounded-2xl shadow-xl transition-all border" :class="isDarkMode ? 'bg-slate-800 border-slate-700 text-yellow-400' : 'bg-white border-slate-100 text-slate-400 hover:text-blue-600'"><svg v-if="!isDarkMode" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg><svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707-.707" /></svg></button>
+          <button @click="toggleCompareMode" :class="['p-3 rounded-2xl shadow-xl transition-all border', isCompareMode ? 'bg-blue-600 border-blue-600 text-white' : (isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-400' : 'bg-white border-slate-100 text-slate-400 hover:text-blue-600')]"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg></button>
           <button @click="resetZoom" class="w-12 h-12 rounded-full shadow-xl border-2 flex items-center justify-center font-bold" :class="isDarkMode ? 'bg-slate-800 border-blue-500/50 text-blue-400' : 'bg-white border-blue-600 text-blue-600'">1:1</button>
+          <div :class="['flex flex-col items-center gap-4 p-3 border rounded-[2rem] shadow-2xl transition-all w-[46px] shrink-0', isDarkMode ? 'bg-slate-800/90 border-slate-700 backdrop-blur-sm' : 'bg-white/90 border-slate-100 backdrop-blur-sm']">
+            <button @click="updateScale(scale + 0.2)" :class="[isDarkMode ? 'text-slate-400 hover:text-blue-400' : 'text-slate-400 hover:text-blue-600']">＋</button>
+            <div class="relative h-32 w-1.5 flex justify-center py-2" @mousedown.stop @touchstart.stop><input type="range" min="0.5" max="5" step="0.1" :value="scale" @input="onSliderInput" class="appearance-none w-32 h-1 bg-slate-200 rounded-lg absolute rotate-90 top-1/2 -translate-y-1/2 cursor-pointer accent-blue-600" /></div>
+            <button @click="updateScale(scale - 0.2)" :class="[isDarkMode ? 'text-slate-400 hover:text-blue-400' : 'text-slate-400 hover:text-blue-600']">－</button>
+          </div>
         </div>
       </div>
 
@@ -279,41 +283,59 @@ const onSliderInput = (e) => { updateScale(parseFloat(e.target.value)) }
 </template>
 
 <style scoped>
-/* 1. 상시 가이드 (대기 상태): 사선 패턴과 소프트 글로우 */
-.region-ready {
-  fill: url(#diagonalHatch); /* 사선 패턴 적용 */
-  stroke: rgba(59, 130, 246, 0.6);
-  stroke-width: 4;
-  stroke-dasharray: 10, 8;
-  filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.4));
-  animation: scan-pulse 3s infinite ease-in-out;
+/* 1. 상시 가이드 (대기 상태): "여기 클릭하세요!!!" 라고 외치는 디자인 */
+.polygon-guide {
+  /* 도면과 보색 대비를 이루는 선명한 블루 */
+  fill: rgba(59, 130, 246, 0.15);
+  stroke: #3b82f6;
+  stroke-width: 8; /* 두께 대폭 강화 */
+
+  /* 점선을 길게 설정하여 도면의 얇은 선들과 차별화 */
+  stroke-dasharray: 20, 15;
+  stroke-linecap: round;
+
+  /* 네온 글로우 효과 추가 (상시 발광) */
+  filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.8));
+
+  /* 흐르는 애니메이션과 맥동 애니메이션 동시 적용 */
+  animation:
+      dash-flow 3s linear infinite,
+      neon-pulse 2s infinite ease-in-out;
 }
 
-/* 2. 활성 가이드 (Hover/선택 상태): 패턴이 차오르고 선이 뚜렷해짐 */
-.region-active {
-  fill: rgba(59, 130, 246, 0.25) !important;
-  stroke: rgba(37, 99, 235, 1) !important;
-  stroke-width: 8 !important;
-  stroke-dasharray: none !important;
-  filter: drop-shadow(0 0 25px rgba(59, 130, 246, 0.8));
+/* 2. 활성화(Hover) 및 선택 시 스타일: 완전히 채워지며 강렬하게 하이라이트 */
+.polygon-active {
+  fill: rgba(59, 130, 246, 0.5) !important;
+  stroke: #2563eb !important;
+  stroke-width: 12 !important;
+  stroke-dasharray: none !important; /* 실선으로 변경 */
+  filter: drop-shadow(0 0 20px rgba(59, 130, 246, 1)) brightness(1.2);
+  transition: all 0.3s ease;
 }
 
-/* 3. "여기 클릭하세요"라는 느낌을 주는 애니메이션 */
-@keyframes scan-pulse {
+/* 3. 점선이 테두리를 따라 계속 흐르는 애니메이션 (시선 강탈용) */
+@keyframes dash-flow {
+  to {
+    stroke-dashoffset: -35;
+  }
+}
+
+/* 4. 영역 자체가 숨쉬듯 깜빡이는 애니메이션 */
+@keyframes neon-pulse {
   0% {
-    stroke-opacity: 0.4;
+    stroke-opacity: 0.5;
     fill-opacity: 0.1;
-    filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.3));
+    filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.5));
   }
   50% {
     stroke-opacity: 1;
-    fill-opacity: 0.3;
-    filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.6));
+    fill-opacity: 0.3; /* 색상이 진하게 차오름 */
+    filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.9));
   }
   100% {
-    stroke-opacity: 0.4;
+    stroke-opacity: 0.5;
     fill-opacity: 0.1;
-    filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.3));
+    filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.5));
   }
 }
 
