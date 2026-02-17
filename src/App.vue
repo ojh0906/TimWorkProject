@@ -323,19 +323,19 @@ const onSliderInput = (e) => { updateScale(parseFloat(e.target.value)) }
 /* 4. 영역 자체가 숨쉬듯 깜빡이는 애니메이션 */
 @keyframes neon-pulse {
   0% {
-    stroke-opacity: 0.5;
-    fill-opacity: 0.1;
-    filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.5));
+    stroke-opacity: 0.3;
+    fill-opacity: 0.05;
+    filter: drop-shadow(0 0 2px rgba(59, 130, 246, 0.1));
   }
   50% {
-    stroke-opacity: 1;
-    fill-opacity: 0.3; /* 색상이 진하게 차오름 */
-    filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.9));
+    stroke-opacity: 0.7;
+    fill-opacity: 0.15; /* 색상 차오르는 정도를 절반으로 줄임 */
+    filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.4));
   }
   100% {
-    stroke-opacity: 0.5;
-    fill-opacity: 0.1;
-    filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.5));
+    stroke-opacity: 0.3;
+    fill-opacity: 0.05;
+    filter: drop-shadow(0 0 2px rgba(59, 130, 246, 0.1));
   }
 }
 
