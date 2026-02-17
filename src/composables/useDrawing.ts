@@ -46,7 +46,18 @@ export function useDrawing() {
     const splitRatio = ref(0.5);   // 스플릿 바 위치 (0 ~ 1)
     // const isHandleDragging = ref(false);
     const hoveredDrawingId = ref<string | null>(null);
+    const pins = ref([]); // 핀 목록 저장 { id, x, y, type, note }
 
+    const addPin = (drawingX: number, drawingY: number) => {
+        const newPin = {
+            id: Date.now(),
+            x: drawingX,
+            y: drawingY,
+            type: 'issue', // 기본값: 이슈
+            note: '새로운 이슈 기록'
+        };
+        pins.value.push(newPin);
+    };
 
     const handlePolygonClick = (id: string) => {
         selectDrawing(id);
@@ -179,7 +190,7 @@ export function useDrawing() {
         const revs = discData.revisions || [];
         const info = revs.map((r, index) => ({
             version: r.version,
-            image: r.image.normalize('NFC'),
+            image: r.image,
             date: r.date || '날짜 미상',
             description: r.description || '수정 내역이 없습니다.',
             isLatest: index === revs.length - 1
@@ -188,7 +199,7 @@ export function useDrawing() {
         if (!info.some(r => r.version === 'Original')) {
             info.unshift({
                 version: 'Original',
-                image: drawing.image.normalize('NFC'),
+                image: drawing.image,
                 date: '최초 등록',
                 description: '초기 발행 도면입니다.',
                 isLatest: revs.length === 0
@@ -208,7 +219,7 @@ export function useDrawing() {
         const info = availableRevisionsInfo.value;
         const currentRev = info.find(r => r.version === selectedRevision.value) || info[0];
 
-        const targetImage = currentRev ? currentRev.image.normalize('NFC') : drawing.image.normalize('NFC');
+        const targetImage = currentRev ? currentRev.image : drawing.image;
         return `/data/drawings/${targetImage.trim()}`;
     });
 
@@ -221,7 +232,7 @@ export function useDrawing() {
         const info = availableRevisionsInfo.value;
         const targetRev = info.find(r => r.version === compareRevision.value);
 
-        const targetFileName = targetRev ? targetRev.image.normalize('NFC') : (selectedRevision.value || drawing.image.normalize('NFC'));
+        const targetFileName = targetRev ? targetRev.image : (selectedRevision.value || drawing.image);
         return `/data/drawings/${targetFileName.trim()}`;
     });
 
@@ -263,6 +274,7 @@ export function useDrawing() {
         isCompareMode, compareRevision, compareImage, isColorCoded, overlayOpacity,
         toggleCompareMode, setCompareRevision,
         isSplitMode, splitRatio, toggleSplitMode, updateSplitRatio,
-        hoveredDrawingId, handlePolygonClick, handlePolygonHover
+        hoveredDrawingId, handlePolygonClick, handlePolygonHover,
+        pins, addPin
     };
 }
