@@ -24,6 +24,7 @@ interface Drawing {
     id: string;
     name: string;
     image: string;
+    points?: string;
     disciplines?: { [key: string]: DisciplineData | undefined };
     isRecentlyUpdated?: boolean;
 }
@@ -40,10 +41,43 @@ export function useDrawing() {
     const searchQuery = ref<string>('')
     const selectedDiscipline = ref<string>('전체')
     const isDarkMode = ref(false);
+    const isColorCoded = ref(true);
+    const isSplitMode = ref(false); // 스플릿 뷰 활성화 여부
+    const splitRatio = ref(0.5);   // 스플릿 바 위치 (0 ~ 1)
+    // const isHandleDragging = ref(false);
+    const hoveredDrawingId = ref<string | null>(null);
+
+
+    const handlePolygonClick = (id: string) => {
+        selectDrawing(id);
+    };
+
+    // [추가] 마우스 오버 시 ID 저장
+    const handlePolygonHover = (id: string | null) => {
+        hoveredDrawingId.value = id;
+    };
+
+    const toggleSplitMode = () => {
+        isSplitMode.value = !isSplitMode.value;
+        if (isSplitMode.value) {
+            isCompareMode.value = true; // 스플릿 모드 켜면 비교 모드도 함께 활성화
+            overlayOpacity.value = 1;   // 스플릿일 때는 투명도가 의미 없으므로 1로 설정
+        }
+    };
+
+    const updateSplitRatio = (val: number) => {
+        splitRatio.value = Math.min(Math.max(val, 0), 1);
+    };
+
 
     // 확대/축소 및 위치 상태
     const scale = ref(1);
     const position = ref({ x: 0, y: 0 });
+
+    // 비교 모드 관련 상태 관리
+    const isCompareMode = ref(false);
+    const compareRevision = ref<string>('');
+    const overlayOpacity = ref(0.5);
 
     onMounted(async () => {
         try {
@@ -51,6 +85,24 @@ export function useDrawing() {
             metadata.value = await res.json()
         } catch (e) { console.error("로드 실패:", e) }
     })
+
+    const toggleCompareMode = () => {
+        isCompareMode.value = !isCompareMode.value;
+
+        if (isCompareMode.value) {
+            if (availableRevisions.value.length > 1) {
+                const currentIndex = availableRevisions.value.indexOf(selectedRevision.value);
+                const targetIndex = currentIndex === 0 ? 1 : 0;
+                compareRevision.value = availableRevisions.value[targetIndex];
+            } else {
+                compareRevision.value = selectedRevision.value || 'Original';
+            }
+        }
+    };
+
+    const setCompareRevision = (rev: string) => {
+        compareRevision.value = rev;
+    };
 
     const toggleDarkMode = () => {
         isDarkMode.value = !isDarkMode.value;
@@ -61,16 +113,14 @@ export function useDrawing() {
         position.value = { x: 0, y: 0 };
     };
 
-    // [신규] 마우스 휠 확대/축소 로직
     const handleWheel = (e: WheelEvent) => {
         e.preventDefault();
-        const zoomSpeed = 0.0015; // 현장용 정밀 조절을 위한 속도 튜닝
+        const zoomSpeed = 0.0015;
         const delta = -e.deltaY * zoomSpeed;
-        const nextScale = Math.min(Math.max(scale.value + delta, 0.5), 5); // 0.5배 ~ 5배 제한
+        const nextScale = Math.min(Math.max(scale.value + delta, 0.5), 5);
         scale.value = nextScale;
     };
 
-    // [신규] 슬라이더 및 버튼용 배율 업데이트 함수
     const updateScale = (newScale: number) => {
         scale.value = Math.min(Math.max(newScale, 0.5), 5);
     };
@@ -129,7 +179,7 @@ export function useDrawing() {
         const revs = discData.revisions || [];
         const info = revs.map((r, index) => ({
             version: r.version,
-            image: r.image,
+            image: r.image.normalize('NFC'),
             date: r.date || '날짜 미상',
             description: r.description || '수정 내역이 없습니다.',
             isLatest: index === revs.length - 1
@@ -138,7 +188,7 @@ export function useDrawing() {
         if (!info.some(r => r.version === 'Original')) {
             info.unshift({
                 version: 'Original',
-                image: drawing.image,
+                image: drawing.image.normalize('NFC'),
                 date: '최초 등록',
                 description: '초기 발행 도면입니다.',
                 isLatest: revs.length === 0
@@ -150,6 +200,7 @@ export function useDrawing() {
 
     const availableRevisions = computed(() => availableRevisionsInfo.value.map(r => r.version));
 
+    // 메인 상위 레이어 도면 이미지 (현재 검토 중인 도면)
     const currentImage = computed(() => {
         const drawing = selectedDrawing.value;
         if (!drawing) return null;
@@ -157,14 +208,28 @@ export function useDrawing() {
         const info = availableRevisionsInfo.value;
         const currentRev = info.find(r => r.version === selectedRevision.value) || info[0];
 
-        const targetImage = currentRev ? currentRev.image : drawing.image;
+        const targetImage = currentRev ? currentRev.image.normalize('NFC') : drawing.image.normalize('NFC');
         return `/data/drawings/${targetImage.trim()}`;
+    });
+
+    // 하단 비교 레이어 도면 이미지 (오버레이용)
+    const compareImage = computed(() => {
+        if (!isCompareMode.value) return null;
+        const drawing = selectedDrawing.value;
+        if (!drawing) return null;
+
+        const info = availableRevisionsInfo.value;
+        const targetRev = info.find(r => r.version === compareRevision.value);
+
+        const targetFileName = targetRev ? targetRev.image.normalize('NFC') : (selectedRevision.value || drawing.image.normalize('NFC'));
+        return `/data/drawings/${targetFileName.trim()}`;
     });
 
     const setRevision = (rev: string) => { selectedRevision.value = rev };
 
     const selectDrawing = (id: string) => {
         selectedDrawingId.value = id;
+        isCompareMode.value = false;
         resetZoom();
 
         const drawing = metadata.value?.drawings[id];
@@ -184,6 +249,7 @@ export function useDrawing() {
     watch(selectedDiscipline, () => {
         const info = availableRevisionsInfo.value;
         if (info.length > 0) selectedRevision.value = info[0].version;
+        isCompareMode.value = false;
         resetZoom();
     });
 
@@ -193,6 +259,10 @@ export function useDrawing() {
         selectedDrawing, currentImage, availableRevisions,
         availableRevisionsInfo, setRevision, selectDrawing,
         isDarkMode, toggleDarkMode, resetZoom,
-        scale, position, handleWheel, updateScale // UI 연결을 위한 항목들
+        scale, position, handleWheel, updateScale,
+        isCompareMode, compareRevision, compareImage, isColorCoded, overlayOpacity,
+        toggleCompareMode, setCompareRevision,
+        isSplitMode, splitRatio, toggleSplitMode, updateSplitRatio,
+        hoveredDrawingId, handlePolygonClick, handlePolygonHover
     };
 }
