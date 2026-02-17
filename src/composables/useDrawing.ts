@@ -190,7 +190,7 @@ export function useDrawing() {
         const revs = discData.revisions || [];
         const info = revs.map((r, index) => ({
             version: r.version,
-            image: r.image,
+            image: r.image.normalize('NFC'),
             date: r.date || '날짜 미상',
             description: r.description || '수정 내역이 없습니다.',
             isLatest: index === revs.length - 1
@@ -199,7 +199,7 @@ export function useDrawing() {
         if (!info.some(r => r.version === 'Original')) {
             info.unshift({
                 version: 'Original',
-                image: drawing.image,
+                image: drawing.image.normalize('NFC'),
                 date: '최초 등록',
                 description: '초기 발행 도면입니다.',
                 isLatest: revs.length === 0
@@ -219,7 +219,7 @@ export function useDrawing() {
         const info = availableRevisionsInfo.value;
         const currentRev = info.find(r => r.version === selectedRevision.value) || info[0];
 
-        const targetImage = currentRev ? currentRev.image : drawing.image;
+        const targetImage = currentRev ? currentRev.image.normalize('NFC') : drawing.image.normalize('NFC');
         return `/data/drawings/${targetImage.trim()}`;
     });
 
@@ -232,7 +232,7 @@ export function useDrawing() {
         const info = availableRevisionsInfo.value;
         const targetRev = info.find(r => r.version === compareRevision.value);
 
-        const targetFileName = targetRev ? targetRev.image : (selectedRevision.value || drawing.image);
+        const targetFileName = targetRev ? targetRev.image.normalize('NFC') : (selectedRevision.value || drawing.image.normalize('NFC'));
         return `/data/drawings/${targetFileName.trim()}`;
     });
 
