@@ -115,23 +115,23 @@ export function useDrawing() {
             const rData = discData.regions[selectedRegion.value];
             if (selectedRevision.value && selectedRevision.value !== 'Original') {
                 const targetRev = rData.revisions?.find(r => r.version === selectedRevision.value);
-                if (targetRev?.image) return `/data/drawings/${targetRev.image.trim()}`;
+                if (targetRev?.image.normalize('NFC')) return `/data/drawings/${targetRev.image.trim()}`;
             }
             // 영역에서 Original 선택 시 공종 베이스 도면 표시
-            return discData.image
-                ? `/data/drawings/${discData.image.trim()}`
-                : `/data/drawings/${drawing.image.trim()}`;
+            return discData.image.normalize('NFC')
+                ? `/data/drawings/${discData.image.normalize('NFC').trim()}`
+                : `/data/drawings/${drawing.image.normalize('NFC').trim()}`;
         }
 
         // Region이 없는 일반 도면의 리비전 처리
         if (discData && discData.revisions) {
             const rootRev = discData.revisions.find(r => r.version === selectedRevision.value);
-            if (rootRev) return `/data/drawings/${rootRev.image.trim()}`;
+            if (rootRev) return `/data/drawings/${rootRev.image.normalize('NFC').trim()}`;
         }
 
         // 공종 베이스 이미지. 건축 등 image 없이 revisions만 있으면 도면 기본 이미지로 Original 표시(주민공동시설 건축 4개 파일 등)
-        if (discData?.image) return `/data/drawings/${discData.image.trim()}`;
-        return `/data/drawings/${drawing.image.trim()}`;
+        if (discData?.image.normalize('NFC')) return `/data/drawings/${discData.image.normalize('NFC').trim()}`;
+        return `/data/drawings/${drawing.image.normalize('NFC').trim()}`;
     });
 
     // [수정] 영역 선택 시에는 메인 이미지로 해당 영역 리비전을 이미 표시하므로 패치 오버레이는 사용하지 않음
