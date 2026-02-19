@@ -191,22 +191,8 @@ export function useDrawing() {
                         });
                     }
 
-                    // 3. A/B 구역 조각 패치 얹기
-                    if (discData.regions) {
-                        for (const [rKey, rData] of Object.entries(discData.regions)) {
-                            let rev = rData.revisions?.find(r => r.version.startsWith(baseVersion));
-                            if (!rev && rData.revisions && rData.revisions.length > 0) rev = rData.revisions[rData.revisions.length - 1];
-                            if (rev && rev.image) {
-                                result.push({
-                                    id: `over_${disc}_${rKey}`,
-                                    url: `/data/drawings/${rev.image.normalize('NFC').trim()}`,
-                                    opacity: state.opacity,
-                                    transform: rev.imageTransform || rData.imageTransform || null,
-                                    isPatch: true
-                                });
-                            }
-                        }
-                    }
+                    // 3. 오버레이 시에는 Region A/B 패치를 추가하지 않음. 베이스(또는 root) 한 장만 표시.
+                    //    (구조 등 region 있는 공종에서 A·B가 동시에 겹쳐 레이아웃이 깨지는 문제 방지)
                 }
             }
         }
