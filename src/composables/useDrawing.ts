@@ -137,7 +137,7 @@ export function useDrawing() {
     // [수정] 영역 선택 시에는 메인 이미지로 해당 영역 리비전을 이미 표시하므로 패치 오버레이는 사용하지 않음
     const activeRevisionPatch = computed(() => {
         const drawing = selectedDrawing.value;
-        if (!drawing || !selectedDiscipline.value) return null;
+        if (!drawing || !drawing.disciplines || !selectedDiscipline.value) return null;
         let discData = drawing.disciplines[selectedDiscipline.value];
         if (!discData) return null;
 
