@@ -308,11 +308,14 @@ const cycleMarkupCoordMode = () => {
           <div class="relative mb-2">
             <button @click="handleSelectDrawing('00')"
                     :class="['w-full flex items-center gap-3 px-4 py-3.5 rounded-[1.2rem] transition-all border-2 text-left',
-                    selectedDrawingId === '00'
-                      ? 'border-blue-600 bg-blue-50/50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-500/50'
-                      : 'border-transparent text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50']">
-              <div :class="['w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-colors', selectedDrawingId === '00' ? 'bg-blue-600 text-white shadow-md' : 'bg-slate-200/50 text-slate-500 dark:bg-slate-800 dark:text-slate-400']">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2.5" d="M9 20l-5.447-2.724A2 2 0 013 15.487V6.513a2 2 0 011.553-1.943L9 2l5.447 2.724A2 2 0 0116 6.513v8.974a2 2 0 01-1.553 1.943L9 20zm0 0v-8" /></svg>
+                  selectedDrawingId === '00'
+                    ? 'border-blue-600 bg-blue-50/50 text-blue-700'
+                    : 'border-transparent text-slate-600 hover:bg-slate-100']">
+              <div :class="['w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-colors',
+                selectedDrawingId === '00' ? 'bg-blue-600 text-white shadow-md' : 'bg-slate-200/50 text-slate-500']">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-width="2.5" d="M9 20l-5.447-2.724A2 2 0 013 15.487V6.513a2 2 0 011.553-1.943L9 2l5.447 2.724A2 2 0 0116 6.513v8.974a2 2 0 01-1.553 1.943L9 20zm0 0v-8" />
+                </svg>
               </div>
               <span class="text-sm font-extrabold tracking-tight">전체 배치도</span>
             </button>
