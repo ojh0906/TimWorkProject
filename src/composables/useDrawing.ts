@@ -115,10 +115,10 @@ export function useDrawing() {
             const rData = discData.regions[selectedRegion.value];
             if (selectedRevision.value && selectedRevision.value !== 'Original') {
                 const targetRev = rData.revisions?.find(r => r.version === selectedRevision.value);
-                if (targetRev?.image.normalize('NFC')) return `/data/drawings/${targetRev.image.trim()}`;
+                if (targetRev?.image) return `/data/drawings/${targetRev.image.normalize('NFC').trim()}`;
             }
             // 영역에서 Original 선택 시 공종 베이스 도면 표시
-            return discData.image.normalize('NFC')
+            return discData.image
                 ? `/data/drawings/${discData.image.normalize('NFC').trim()}`
                 : `/data/drawings/${drawing.image.normalize('NFC').trim()}`;
         }
@@ -130,7 +130,7 @@ export function useDrawing() {
         }
 
         // 공종 베이스 이미지. 건축 등 image 없이 revisions만 있으면 도면 기본 이미지로 Original 표시(주민공동시설 건축 4개 파일 등)
-        if (discData?.image.normalize('NFC')) return `/data/drawings/${discData.image.normalize('NFC').trim()}`;
+        if (discData?.image) return `/data/drawings/${discData.image.normalize('NFC').trim()}`;
         return `/data/drawings/${drawing.image.normalize('NFC').trim()}`;
     });
 
@@ -171,7 +171,7 @@ export function useDrawing() {
                         if (rev && rev.image) {
                             result.push({
                                 id: `over_${disc}_root`,
-                                url: `/data/drawings/${rev.image.trim()}`,
+                                url: `/data/drawings/${rev.image.normalize('NFC').trim()}`,
                                 opacity: state.opacity,
                                 transform: rev.imageTransform || discData.imageTransform || null,
                                 isPatch: false // 전체 도면
@@ -184,7 +184,7 @@ export function useDrawing() {
                     if (!hasRootRev && discData.image) {
                         result.push({
                             id: `over_${disc}_base`,
-                            url: `/data/drawings/${discData.image.trim()}`,
+                            url: `/data/drawings/${discData.image.normalize('NFC').trim()}`,
                             opacity: state.opacity,
                             transform: discData.imageTransform || null,
                             isPatch: false
@@ -199,7 +199,7 @@ export function useDrawing() {
                             if (rev && rev.image) {
                                 result.push({
                                     id: `over_${disc}_${rKey}`,
-                                    url: `/data/drawings/${rev.image.trim()}`,
+                                    url: `/data/drawings/${rev.image.normalize('NFC').trim()}`,
                                     opacity: state.opacity,
                                     transform: rev.imageTransform || rData.imageTransform || null,
                                     isPatch: true
@@ -388,7 +388,7 @@ export function useDrawing() {
 
         const info = allRevs.map((r) => ({
             version: r.version,
-            image: r.image,
+            image: r.image.normalize('NFC'),
             date: r.date || '날짜 미상',
             description: r.description || '수정 내역이 없습니다.',
             isLatest: false
@@ -397,7 +397,7 @@ export function useDrawing() {
         if (!info.some(r => r.version === 'Original')) {
             info.unshift({
                 version: 'Original',
-                image: drawing.image,
+                image: drawing.image.normalize('NFC'),
                 date: '최초 등록',
                 description: '초기 발행 도면입니다.',
                 isLatest: false
@@ -418,7 +418,7 @@ export function useDrawing() {
         const info = availableRevisionsInfo.value;
         const targetRev = info.find(r => r.version === compareRevision.value);
 
-        const targetFileName = targetRev ? targetRev.image : (selectedRevision.value || drawing.image);
+        const targetFileName = targetRev ? targetRev.image.normalize('NFC') : (selectedRevision.value || drawing.image.normalize('NFC'));
         return `/data/drawings/${targetFileName.trim()}`;
     });
 
