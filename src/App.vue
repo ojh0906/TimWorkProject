@@ -323,9 +323,9 @@ const cycleMarkupCoordMode = () => {
 
                 <button @click="handleSelectDrawing(id)"
                         :class="['w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-left shadow-sm',
-                        selectedDrawingId === id
-                          ? 'bg-blue-600 text-white shadow-blue-500/30'
-                          : 'bg-white text-slate-500 dark:bg-slate-800/40 dark:text-slate-400 border border-slate-100 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:text-slate-800 dark:hover:text-slate-200']">
+                          selectedDrawingId === id
+                            ? 'bg-blue-600 text-white shadow-blue-500/30'
+                            : 'bg-white text-slate-500 border border-slate-100 hover:border-blue-300 hover:text-slate-800']">
                   <svg xmlns="http://www.w3.org/2000/svg" :class="['h-4 w-4 shrink-0', selectedDrawingId === id ? 'opacity-100' : 'opacity-50']" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-10V4m-5 4V4" />
                   </svg>
