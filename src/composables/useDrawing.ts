@@ -115,23 +115,23 @@ export function useDrawing() {
             const rData = discData.regions[selectedRegion.value];
             if (selectedRevision.value && selectedRevision.value !== 'Original') {
                 const targetRev = rData.revisions?.find(r => r.version === selectedRevision.value);
-                if (targetRev?.image) return `/data/drawings/${targetRev.image.normalize('NFC').trim()}`;
+                if (targetRev?.image) return `/data/drawings/${targetRev.image.trim()}`;
             }
             // 영역에서 Original 선택 시 공종 베이스 도면 표시
-            return discData.image.normalize('NFC')
-                ? `/data/drawings/${discData.image.normalize('NFC').trim()}`
-                : `/data/drawings/${drawing.image.normalize('NFC').trim()}`;
+            return discData.image
+                ? `/data/drawings/${discData.image.trim()}`
+                : `/data/drawings/${drawing.image.trim()}`;
         }
 
         // Region이 없는 일반 도면의 리비전 처리
         if (discData && discData.revisions) {
             const rootRev = discData.revisions.find(r => r.version === selectedRevision.value);
-            if (rootRev) return `/data/drawings/${rootRev.image.normalize('NFC').trim()}`;
+            if (rootRev) return `/data/drawings/${rootRev.image.trim()}`;
         }
 
         // 공종 베이스 이미지. 건축 등 image 없이 revisions만 있으면 도면 기본 이미지로 Original 표시(주민공동시설 건축 4개 파일 등)
-        if (discData?.image.normalize('NFC')) return `/data/drawings/${discData.image.normalize('NFC').trim()}`;
-        return `/data/drawings/${drawing.image.normalize('NFC').trim()}`;
+        if (discData?.image) return `/data/drawings/${discData.image.trim()}`;
+        return `/data/drawings/${drawing.image.trim()}`;
     });
 
     // [수정] 영역 선택 시에는 메인 이미지로 해당 영역 리비전을 이미 표시하므로 패치 오버레이는 사용하지 않음
@@ -168,10 +168,10 @@ export function useDrawing() {
                     if (discData.revisions) {
                         let rev = discData.revisions.find(r => r.version.startsWith(baseVersion));
                         if (!rev && discData.revisions.length > 0) rev = discData.revisions[discData.revisions.length - 1];
-                        if (rev && rev.image.normalize('NFC')) {
+                        if (rev && rev.image) {
                             result.push({
                                 id: `over_${disc}_root`,
-                                url: `/data/drawings/${rev.image.normalize('NFC').trim()}`,
+                                url: `/data/drawings/${rev.image.trim()}`,
                                 opacity: state.opacity,
                                 transform: rev.imageTransform || discData.imageTransform || null,
                                 isPatch: false // 전체 도면
@@ -181,10 +181,10 @@ export function useDrawing() {
                     }
 
                     // 2. 전체 베이스 도면 (패치가 발견되더라도 베이스는 깔아줌)
-                    if (!hasRootRev && discData.image.normalize('NFC')) {
+                    if (!hasRootRev && discData.image) {
                         result.push({
                             id: `over_${disc}_base`,
-                            url: `/data/drawings/${discData.image.normalize('NFC').trim()}`,
+                            url: `/data/drawings/${discData.image.trim()}`,
                             opacity: state.opacity,
                             transform: discData.imageTransform || null,
                             isPatch: false
@@ -196,10 +196,10 @@ export function useDrawing() {
                         for (const [rKey, rData] of Object.entries(discData.regions)) {
                             let rev = rData.revisions?.find(r => r.version.startsWith(baseVersion));
                             if (!rev && rData.revisions && rData.revisions.length > 0) rev = rData.revisions[rData.revisions.length - 1];
-                            if (rev && rev.image.normalize('NFC')) {
+                            if (rev && rev.image) {
                                 result.push({
                                     id: `over_${disc}_${rKey}`,
-                                    url: `/data/drawings/${rev.image.normalize('NFC').trim()}`,
+                                    url: `/data/drawings/${rev.image.trim()}`,
                                     opacity: state.opacity,
                                     transform: rev.imageTransform || rData.imageTransform || null,
                                     isPatch: true
@@ -388,7 +388,7 @@ export function useDrawing() {
 
         const info = allRevs.map((r) => ({
             version: r.version,
-            image: r.image.normalize('NFC'),
+            image: r.image,
             date: r.date || '날짜 미상',
             description: r.description || '수정 내역이 없습니다.',
             isLatest: false
@@ -397,7 +397,7 @@ export function useDrawing() {
         if (!info.some(r => r.version === 'Original')) {
             info.unshift({
                 version: 'Original',
-                image: drawing.image.normalize('NFC'),
+                image: drawing.image,
                 date: '최초 등록',
                 description: '초기 발행 도면입니다.',
                 isLatest: false
@@ -418,7 +418,7 @@ export function useDrawing() {
         const info = availableRevisionsInfo.value;
         const targetRev = info.find(r => r.version === compareRevision.value);
 
-        const targetFileName = targetRev ? targetRev.image.normalize('NFC') : (selectedRevision.value || drawing.image.normalize('NFC'));
+        const targetFileName = targetRev ? targetRev.image : (selectedRevision.value || drawing.image);
         return `/data/drawings/${targetFileName.trim()}`;
     });
 
